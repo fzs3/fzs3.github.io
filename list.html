@@ -88,6 +88,9 @@
             <span id="ser_num">32/64 </span>
             <span> - </span>
             <span id="ser_map">None</span>
+            <span> - </span>
+            <span id="ser_map"> 版本：</span>
+            <span id="ser_ver">None</span>
         </div>
 
         <div class="player-panel">
@@ -122,11 +125,13 @@
                             var serMap = server.info.map.name;
                             var serNum = server.info.clients.length;
                             var serTotal = server.info.max_clients;
+                            var serVer = server.info.version;
                             var clients = server.info.clients;
 
                             $('#ser_name').text(serName);
                             $('#ser_map').text(serMap);
                             $('#ser_num').text("[" + serNum + "/" + serTotal + "]");
+                            $('#ser_ver').text(serVer);
 
                             for(var client_key in clients){
                                 var client = clients[client_key];
