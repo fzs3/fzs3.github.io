@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感染列表</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <style>
+        body{
+            position: relative;
+            margin: 0;
+            padding: 0;
+        }
+
+        .back{
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+
+        span{
+            color: white;
+            font-size: 20px;
+        }
+
+
+        .server-panel{
+            margin: 12px;
+            background-color: rgba(27, 25, 24, 0.815);
+            border-radius: 12px;
+            height: 97%;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+
+        .server-item{
+            margin: 30px;
+
+        }
+
+        .player-panel{
+            justify-content: center; 
+            align-items: center;
+            display: flex;
+            border-radius: 12px;
+            flex-wrap: wrap;
+            background-color: rgba(63, 59, 56, 0.6);
+
+        }
+
+        .player-item{
+            justify-content: center; 
+            align-items: center;
+            border-radius: 5px;
+            width: 260px;
+            height: 30px;
+            margin: 10px;
+            background-color: rgba(33, 44, 33, 0.692);
+            padding: 12px;
+        }
+
+        .player-game{
+            background-color: rgba(33, 44, 33, 0.692);
+        }
+
+        .player-spec{
+            background-color: rgba(146, 26, 26, 0.692);
+        }
+
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="//cdn.staticfile.org/layui/2.8.17/layui.js"></script>
+
+    <div class="back">
+      
+    <div class="server-panel">
+        <div class="server-item">
+            <span id="ser_name">感染服务器</span>
+            <span id="ser_num">32/64 </span>
+            <span> - </span>
+            <span id="ser_map">None</span>
+        </div>
+
+        <div class="player-panel">
+        </div>
+    </div>
+
+    </div>
+    <script>
+        $(document).ready(function(){
+            $(".back").css("background","url('http://api.btstu.cn/sjbz/?lx=dongman')  center center no-repeat")
+
+            // https://master1.ddnet.org/ddnet/15/servers.json
+            axios.defaults.baseURL = ' https://master1.ddnet.org'
+
+            axios({
+                    url: '/ddnet/15/servers.json',
+                    params: {
+                        id: Date.now()
+                    }
+                })
+                .then(response => {
+                    var servers = response.data.servers;
+
+                    for(var key in servers){
+                        var server = servers[key];
+                        var serverAddr = server.addresses[0];
+
+                        if(serverAddr.indexOf("49.232.201.96") != -1)
+                        {
+                            console.log(server)
+                            var serName = server.info.name;
+                            var serMap = server.info.map.name;
+                            var serNum = server.info.clients.length;
+                            var serTotal = server.info.max_clients;
+                            var clients = server.info.clients;
+
+                            $('#ser_name').text(serName);
+                            $('#ser_map').text(serMap);
+                            $('#ser_num').text("[" + serNum + "/" + serTotal + "]");
+
+                            for(var client_key in clients){
+                                var client = clients[client_key];
+                                console.log(client);
+                                var cName = client.name;
+                                var cScore = client.score;
+                                var cIsPlayer = client.is_player;
+                                
+                                var $html = $('<div class="player-item"></div>');
+                                if(cIsPlayer){
+                                    $html.addClass("player-game");
+                                }else{
+                                    $html.addClass("player-spec");
+                                }
+                                $html.append($('<span></span>').text(cName));
+                                $html.append($('<span></span>').text('---'));
+                                $html.append($('<span></span>').text(cScore));
+                                
+                                $('.player-panel').append($html);
+                            }
+                            break;
+                        }
+                    }
+                    return response.data
+                }, error => {
+                    console.log('错误', error.message)
+            })
+
+        });
+
+    </script> 
+</body>
+
+</html>
